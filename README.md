@@ -12,9 +12,9 @@ This repository facilitates a single-player *Jeopardy!* game experience in VSCod
    ```bash
    git clone git@github.com:abdyer/j-archive-mcp.git
    ```
-2. Install dependencies:
+2. Install dependencies & build:
    ```bash
-   npm install
+   npm install && npm run build
    ```
 3. Update your VSCode `settings.json` file to include the following configuration under the `mcp` key:
    ```json
