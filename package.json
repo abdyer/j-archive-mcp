@@ -9,9 +9,9 @@
     "build": "tsc && chmod 755 build/index.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "Andy Dyer",
+  "license": "MIT",
+  "description": "A J-Archive MCP server for GitHub Copilot & other AI assistants",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.10.2",
     "cheerio": "^1.0.0",
