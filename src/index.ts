@@ -63,6 +63,9 @@ server.tool(
                 result.push({ type: "text", text: `Final Jeopardy Round: ${JSON.stringify(finalJeopardyRound)}` });
 
                 const gameDetails = parseGameDetails($);
+                
+                result.push({ type: "text", text: `Jeopardy Scores: ${JSON.stringify(gameDetails.jeopardyScores)}` });
+                result.push({ type: "text", text: `Double Jeopardy Scores: ${JSON.stringify(gameDetails.doubleJeopardyScores)}` });
                 result.push({ type: "text", text: `Final Scores: ${JSON.stringify(gameDetails.finalScores)}` });
                 result.push({ type: "text", text: `Coryat Scores: ${JSON.stringify(gameDetails.coryatScores)}` });
 
