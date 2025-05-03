@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as cheerio from 'cheerio';
-import { parseGameDetails } from '../index';
+import { parseGameDetails, server } from '../index';
 import path from 'path';
 
 describe('parseGameDetails', () => {
@@ -50,5 +50,9 @@ describe('parseGameDetails', () => {
             { contestant: 'Yogesh', score: '22,600' },
             { contestant: 'Brad', score: '6,200' },
         ]);
+    });
+
+    afterAll(async () => {
+        await server.close();
     });
 });

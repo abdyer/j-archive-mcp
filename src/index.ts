@@ -5,7 +5,7 @@ import * as cheerio from "cheerio";
 import request from "request";
 import _ from "lodash";
 
-const server = new McpServer({
+export const server = new McpServer({
     name: "j-archive",
     version: "1.0.0",
     capabilities: {
@@ -192,9 +192,7 @@ async function main() {
     console.error("J-Archive MCP Server running on stdio");
 }
 
-if (process.env.NODE_ENV !== 'test') {
-    main().catch((error) => {
-        console.error("Fatal error in main():", error);
-        process.exit(1);
-    });
-}
+main().catch((error) => {
+    console.error("Fatal error in main():", error);
+    process.exit(1);
+});
