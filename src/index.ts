@@ -191,7 +191,7 @@ export const parseGameDetails = ($: cheerio.CheerioAPI) => {
 async function main() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error("J-Archive MCP Server running on stdio");
+    console.info("J-Archive MCP Server running on stdio");
 }
 
 main().catch((error) => {
