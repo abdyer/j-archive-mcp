@@ -62,6 +62,10 @@ server.tool(
                 result.push({ type: "text", text: `Double Jeopardy Round: ${JSON.stringify(doubleJeopardyRound)}` });
                 result.push({ type: "text", text: `Final Jeopardy Round: ${JSON.stringify(finalJeopardyRound)}` });
 
+                const gameDetails = parseGameDetails($);
+                result.push({ type: "text", text: `Final Scores: ${JSON.stringify(gameDetails.finalScores)}` });
+                result.push({ type: "text", text: `Coryat Scores: ${JSON.stringify(gameDetails.coryatScores)}` });
+
                 resolve({ content: [{ type: "text", text: JSON.stringify(result) }] });
             });
         });
@@ -141,13 +145,53 @@ const parseRound = ($: cheerio.CheerioAPI, context: any, r: string) => {
     return roundResult;
 };
 
+const parseScores = ($: cheerio.CheerioAPI, headerText: string): { contestant: string; score: string }[] => {
+    const scores: { contestant: string; score: string }[] = [];
+    const header = $(`h3:contains('${headerText}')`);
+    const scoresTable = header.next('table');
+
+    if (scoresTable.length === 0) {
+        console.warn(`No table found for header: ${headerText}`);
+        return scores;
+    }
+
+    const nameCells = scoresTable.find('td.score_player_nickname');
+    const scoreCells = scoresTable.find('td.score_positive');
+
+    if (nameCells.length !== scoreCells.length) {
+        console.warn(`Mismatch between number of names and scores for header: ${headerText}`);
+        return scores;
+    }
+
+    nameCells.each((index, element) => {
+        const contestant = $(element).text().trim();
+        const score = $(scoreCells[index]).text().trim();
+        if (contestant && score) {
+            scores.push({ contestant, score });
+        }
+    });
+
+    return scores;
+}
+
+export const parseGameDetails = ($: cheerio.CheerioAPI) => {
+    const finalScores = parseScores($, 'Final scores');
+    const coryatScores = parseScores($, 'Coryat scores');
+    const jeopardyScores = parseScores($, 'Scores at the end of the Jeopardy! Round');
+    const doubleJeopardyScores = parseScores($, 'Scores at the end of the Double Jeopardy! Round');
+
+    return { finalScores, coryatScores, jeopardyScores, doubleJeopardyScores };
+};
+
 async function main() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
     console.error("J-Archive MCP Server running on stdio");
 }
 
-main().catch((error) => {
-    console.error("Fatal error in main():", error);
-    process.exit(1);
-});
+if (process.env.NODE_ENV !== 'test') {
+    main().catch((error) => {
+        console.error("Fatal error in main():", error);
+        process.exit(1);
+    });
+}
