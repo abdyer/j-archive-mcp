@@ -1,5 +1,5 @@
 import * as cheerio from 'cheerio';
-import { parseRound, parseGameDetails, parseGame, parseCategories, parseClues, parseScores } from '../parsing';
+import { parseRound, parseGameDetails, parseGame, parseCategories, parseClues, parseScores, parseIndex } from '../parsing';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -145,5 +145,36 @@ describe('parseScores', () => {
                 { contestant: 'Brad', score: '2,178' },
             ])
         );
+    });
+});
+
+describe('parseIndex', () => {
+    it('should correctly parse HTML and extract season data', () => {
+        const sampleHtml = `
+            <div id="content">
+                <table>
+                    <tr>
+                        <td><a href="?season=1">Season 1</a></td>
+                        <td>First Season</td>
+                        <td>Description of Season 1</td>
+                        <td>Note about Season 1</td>
+                    </tr>
+                </table>
+            </div>
+        `;
+
+        const result = parseIndex(sampleHtml);
+
+        expect(result.content).toEqual([
+            {
+                type: 'text',
+                text: JSON.stringify({
+                    id: '1',
+                    name: 'Season 1',
+                    note: 'First Season',
+                    description: 'Description of Season 1',
+                }),
+            },
+        ]);
     });
 });

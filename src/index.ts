@@ -5,7 +5,7 @@ import * as cheerio from "cheerio";
 import request from "request";
 import _ from "lodash";
 import { SEASONS_URL, SEASON_URL, GAME_URL } from "./config.js";
-import { requestIndex, parseRound, parseGame } from "./parsing.js";
+import { parseRound, parseGame, parseIndex } from "./parsing.js";
 
 export const server = new McpServer({
     name: "j-archive",
@@ -21,7 +21,13 @@ server.tool(
     "Get all Jeopardy seasons",
     {},
     async (): Promise<{ content: { type: "text"; text: string }[] }> => {
-        return requestIndex(SEASONS_URL);
+        const html = await new Promise<string>((resolve, reject) => {
+            request(SEASONS_URL, (error, _response, body) => {
+                if (error) return reject(error);
+                resolve(body);
+            });
+        });
+        return parseIndex(html);
     }
 );
 
@@ -32,7 +38,13 @@ server.tool(
         id: z.string().describe("The ID of the Jeopardy season"),
     },
     async ({ id }: { id: string }): Promise<{ content: { type: "text"; text: string }[] }> => {
-        return requestIndex(SEASON_URL(id));
+        const html = await new Promise<string>((resolve, reject) => {
+            request(SEASON_URL(id), (error, _response, body) => {
+                if (error) return reject(error);
+                resolve(body);
+            });
+        });
+        return parseIndex(html);
     }
 );
 
@@ -44,7 +56,7 @@ server.tool(
     },
     async ({ id }: { id: string }): Promise<{ content: { type: "text"; text: string }[] }> => {
         return new Promise((resolve, reject) => {
-            request(GAME_URL(id), (error: Error | null, response: any, html: string) => {
+            request(GAME_URL(id), (error: Error | null, _response: any, html: string) => {
                 if (error) return reject(error);
 
                 const $ = cheerio.load(html);
@@ -64,7 +76,7 @@ server.tool(
     },
     async ({ id }: { id: string }): Promise<{ content: { type: "text"; text: string }[] }> => {
         return new Promise((resolve, reject) => {
-            request(GAME_URL(id), (error, response, html) => {
+            request(GAME_URL(id), (error, _response, html) => {
                 if (error) return reject(error);
 
                 const $ = cheerio.load(html);

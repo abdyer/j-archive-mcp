@@ -1,5 +1,4 @@
 import * as cheerio from "cheerio";
-import request from "request";
 import _ from "lodash";
 
 interface Clue {
@@ -24,36 +23,24 @@ interface GameDetails {
     doubleJeopardyScores: { contestant: string; score: string }[];
 }
 
-export const requestIndex = async (url: string): Promise<any> => {
-    try {
-        const html = await new Promise<string>((resolve, reject) => {
-            request(url, (error, response, body) => {
-                if (error) return reject(error);
-                resolve(body);
-            });
+export const parseIndex = (html: string): { content: { type: "text"; text: string }[] } => {
+    const $ = cheerio.load(html);
+    const result: { type: "text"; text: string }[] = [];
+    $("#content table tr").each(function () {
+        const data = $(this);
+        const row: string[] = [];
+        data.children().each(function (i, element) {
+            if (i === 0) {
+                let link = $("a", element).first().attr("href") || "";
+                link = link.substring(link.indexOf("=") + 1);
+                row.push(link);
+            }
+            row.push($(element).text().trim());
         });
-
-        const $ = cheerio.load(html);
-        const result: { type: "text"; text: string }[] = [];
-        $("#content table tr").each(function () {
-            const data = $(this);
-            const row: string[] = [];
-            data.children().each(function (i, element) {
-                if (i === 0) {
-                    let link = $("a", element).first().attr("href") || "";
-                    link = link.substring(link.indexOf("=") + 1);
-                    row.push(link);
-                }
-                row.push($(element).text().trim());
-            });
-            const season = _.zipObject(["id", "name", "description", "note"], row);
-            result.push({ type: "text", text: JSON.stringify(season) });
-        });
-        return { content: [{ type: "text", text: JSON.stringify(result) }] };
-    } catch (error) {
-        console.error("Error in requestIndex:", error);
-        throw error;
-    }
+        const season = _.zipObject(["id", "name", "note", "description"], row);
+        result.push({ type: "text", text: JSON.stringify(season) });
+    });
+    return { content: result };
 };
 
 export const parseCategories = ($: cheerio.CheerioAPI, context: any, roundPrefix: string): Record<string, any> => {
