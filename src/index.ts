@@ -122,7 +122,7 @@ const requestIndex = (url: string) => new Promise<any>((resolve, reject) => {
     });
 });
 
-const parseRound = ($: cheerio.CheerioAPI, context: any, r: string) => {
+export const parseRound = ($: cheerio.CheerioAPI, context: any, r: string) => {
     const round = $(r !== "FJ" ? "table.round" : "table.final_round", context);
     const roundResult: any = {};
 
@@ -137,10 +137,12 @@ const parseRound = ($: cheerio.CheerioAPI, context: any, r: string) => {
     $(".clue_text", round).not("[id$='_r']").each(function (i, element) {
         const data = $(this);
         const clueId = data.attr("id");
+        const clueOrder = $(this).closest(".clue").find(".clue_order_number a").text();
         if (clueId) {
             roundResult[clueId] = {
                 clue_text: data.text(),
                 correct_response: $(".correct_response", data.parent()).text(),
+                clue_order_number: clueOrder,
             };
         }
     });
