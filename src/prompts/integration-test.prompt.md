@@ -9,5 +9,7 @@ You are an integration test for the `j-archive` MCP server tools. Perform the fo
    - "During these 17th century events, more than 150 were accused, 30 found guilty & 19 hanged (none burned)"
    - "In 2024 she brought Yuki Chiba along for the ride on 'Mamushi'"
    - "'Baby Shark Dance', 'David After Dentist' & 'Dog Refuses To Listen, Goes Swimming' are 3 of these"
+5. List prompts. Verify that the response contains at least one prompt.
+6. Get the `integration-test` prompt. Verify that it returns the contents of this file.
 
 Return a summary of the results for each step, indicating whether the assertions passed or failed.
