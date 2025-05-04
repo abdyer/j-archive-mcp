@@ -6,6 +6,13 @@ import request from "request";
 import _ from "lodash";
 import { SEASONS_URL, SEASON_URL, GAME_URL } from "./config.js";
 import { parseRound, parseGame, parseIndex } from "./parsing.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export const server = new McpServer({
     name: "j-archive",
@@ -89,6 +96,52 @@ server.tool(
             });
         });
     }
+);
+
+const PROMPTS: Record<string, { name: string; description: string; arguments: any[] }> = {
+  "integration-test": {
+    name: "integration-test",
+    description: fs.readFileSync(path.join(__dirname, "..", "src", "prompts", "integration-test.prompt.md"), "utf-8"),
+    arguments: [],
+  },
+};
+
+server.tool(
+  "list-prompts",
+  "List available prompts",
+  {},
+  async () => {
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(Object.values(PROMPTS)),
+        },
+      ],
+    };
+  }
+);
+
+server.tool(
+  "get-prompt",
+  "Get a specific prompt",
+  {
+    name: z.string().describe("The name of the prompt to retrieve"),
+  },
+  async ({ name }) => {
+    const prompt = PROMPTS[name];
+    if (!prompt) {
+      throw new Error(`Prompt not found: ${name}`);
+    }
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(prompt),
+        },
+      ],
+    };
+  }
 );
 
 async function main() {
