@@ -101,7 +101,7 @@ server.tool(
 const PROMPTS: Record<string, { name: string; description: string; arguments: any[] }> = {
   "integration-test": {
     name: "integration-test",
-    description: fs.readFileSync(path.join(__dirname, "..", "src", "prompts", "integration-test.prompt.md"), "utf-8"),
+    description: fs.readFileSync(path.join(__dirname, "prompts", "integration-test.prompt.md"), "utf-8"),
     arguments: [],
   },
 };
