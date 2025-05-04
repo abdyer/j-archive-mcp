@@ -98,13 +98,17 @@ server.tool(
     }
 );
 
-const PROMPTS: Record<string, { name: string; description: string; arguments: any[] }> = {
-  "integration-test": {
-    name: "integration-test",
-    description: fs.readFileSync(path.join(__dirname, "prompts", "integration-test.prompt.md"), "utf-8"),
-    arguments: [],
-  },
-};
+const PROMPTS: Record<string, { name: string; description: string; arguments: any[] }> = fs.readdirSync(path.join(__dirname, "prompts"))
+  .filter((file) => file.endsWith(".prompt.md"))
+  .reduce((acc, file) => {
+    const name = path.basename(file, ".prompt.md");
+    acc[name] = {
+      name,
+      description: fs.readFileSync(path.join(__dirname, "prompts", file), "utf-8"),
+      arguments: [],
+    };
+    return acc;
+  }, {} as Record<string, { name: string; description: string; arguments: any[] }>);
 
 server.tool(
   "list-prompts",
