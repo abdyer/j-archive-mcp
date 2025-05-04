@@ -5,6 +5,7 @@ interface Clue {
     clue_text: string;
     correct_response: string;
     clue_order_number: string;
+    daily_double_value?: number;
 }
 
 interface Category {
@@ -68,11 +69,15 @@ export const parseClues = ($: cheerio.CheerioAPI, context: any): Record<string, 
         const clueId = data.attr("id");
         const parent = data.parent();
         const clueOrder = data.closest(".clue").find(".clue_order_number a").text();
+        const dailyDoubleElement = data.closest(".clue").find(".clue_value_daily_double");
+        const dailyDoubleValue = dailyDoubleElement.length > 0 ? dailyDoubleElement.text().trim().replace("DD: ", "$") : null;
+
         if (clueId) {
             clues[clueId] = {
                 clue_text: data.text(),
                 correct_response: parent.find(".correct_response").text(),
                 clue_order_number: clueOrder,
+                daily_double_value: dailyDoubleValue,
             };
         }
     });

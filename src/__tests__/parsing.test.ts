@@ -132,6 +132,14 @@ describe('parseClues', () => {
             })
         );
     });
+
+    it('should correctly identify Daily Double clues and their values', () => {
+        const clues = parseClues($, $('#jeopardy_round'));
+
+        const dailyDoubleClue = Object.values(clues).find(clue => clue.daily_double_value);
+        expect(dailyDoubleClue).toBeDefined();
+        expect(dailyDoubleClue?.daily_double_value).toMatch(/\$\d+/);
+    });
 });
 
 describe('parseScores', () => {
