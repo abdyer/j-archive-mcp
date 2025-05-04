@@ -75,29 +75,6 @@ server.tool(
     }
 );
 
-server.tool(
-    "get-round",
-    "Get a Jeopardy round by ID",
-    {
-        id: z.string().describe("The ID of the Jeopardy round"),
-    },
-    async ({ id }: { id: string }): Promise<{ content: { type: "text"; text: string }[] }> => {
-        return new Promise((resolve, reject) => {
-            request(GAME_URL(id), (error, _response, html) => {
-                if (error) return reject(error);
-
-                const $ = cheerio.load(html);
-                const result: { type: "text"; text: string }[] = [];
-
-                const jeopardyRound = parseRound($, $("#jeopardy_round"), "J");
-                result.push({ type: "text", text: JSON.stringify(jeopardyRound) });
-
-                resolve({ content: [{ type: "text", text: JSON.stringify(result) }] });
-            });
-        });
-    }
-);
-
 const PROMPTS: Record<string, { name: string; description: string; arguments: any[] }> = fs.readdirSync(path.join(__dirname, "prompts"))
   .filter((file) => file.endsWith(".prompt.md"))
   .reduce((acc, file) => {
@@ -151,7 +128,6 @@ server.tool(
 async function main() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.info("J-Archive MCP Server running on stdio");
 }
 
 main().catch((error) => {
